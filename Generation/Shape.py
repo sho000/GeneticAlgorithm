@@ -1,9 +1,9 @@
 # coding:utf-8
 import rhinoscriptsyntax as rs
 
-class Generate(object):
+class Shape(object):
     """
-    Generate
+    Shape
     """
     def __init__(self, pt):
         self.pt = pt

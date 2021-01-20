@@ -1,26 +1,27 @@
 # coding:utf-8
 import random
-from GA.GeneticAlgorithm import GeneticAlgorithm
-from Generate.Generate import Generate
+from Generation.Shape import Shape
 
 # globals
 g_population = 50
-g_phenotypes = []
-g_genotypes = []
+g_shapes = []
 
-# 初期個体生成
-for i in range(g_population):
-    x = random.uniform(0,1000)
-    y = random.uniform(0,1000)
-    z = 0
-    genotype = [x,y]
-    phenotype = Generate([x,y,z])
-    g_genotypes.append(genotype)
-    g_phenotypes.append(phenotype)
+def main():
+    global g_population, g_shapes
+    # 初期個体生成
+    for i in range(g_population):
+        x = random.uniform(0,1000)
+        y = random.uniform(0,1000)
+        z = 0
+        shape = Shape([x,y,z])
+        g_shapes.append(shape)
 
-# 初期個体描画
-for phenotype in g_phenotypes:
-    objs = phenotype.draw()
+    # 初期個体描画
+    for shape in g_shapes:
+        objs = shape.draw()
 
 
 # ga = GeneticAlgorithm(g_population)
+
+if(__name__ == "__main__") :
+    main()
