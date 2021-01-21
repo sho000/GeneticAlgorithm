@@ -8,12 +8,14 @@ class GeneticAlgorithm(object):
     """
     def __init__(   self, 
                     populationNum,
-                    constraints):
+                    constraints,
+                    evaluation):
         """
         コンストラクタ
         """
         self.populationNum = populationNum    # 世代あたりの個体数
         self.constraints = constraints          # 設計変数
+        self.evaluation = evaluation
         self.generations = []
 
         self.step()
@@ -26,6 +28,7 @@ class GeneticAlgorithm(object):
         self.generate()
 
         # 02. Evaluate : 評価
+        self.evaluate()
 
         # 03. Select : 選択
 
@@ -52,3 +55,8 @@ class GeneticAlgorithm(object):
             individuals.append(individual)
         self.generations.append(individuals)
     
+    def evaluate(self):
+        """
+        evaluate
+        """
+        self.evaluation.getFitness()
