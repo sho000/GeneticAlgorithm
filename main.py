@@ -2,7 +2,7 @@
 import random
 from Optimization.GeneticAlgorithm import GeneticAlgorithm
 from Generation.Shape import Shape
-from Evaluation
+from Evaluation.Evaluation import Evaluation
 import rhinoscriptsyntax as rs
 
 # globals
@@ -12,7 +12,7 @@ constraints = [
 ]
 populationNum = 50
 
-evaluation =
+# evaluation = 
 
 # instance of GeneticAlgorithm class
 ga = GeneticAlgorithm(
