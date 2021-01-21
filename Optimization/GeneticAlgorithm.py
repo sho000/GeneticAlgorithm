@@ -1,21 +1,21 @@
 # coding:utf-8
 import random
-from Generation.Shape import Shape
+from Optimization.Individual import Individual
 
 class GeneticAlgorithm(object):
     """
     GA : 遺伝的アルゴリズム
     """
-    def __init__(self, 
-                    population=50):
+    def __init__(   self, 
+                    populationNum,
+                    constraints):
         """
         コンストラクタ
         """
-        self.population = population    # 世代あたりの個体数
-        self.minX = 0
-        self.maxX = 1000
-        self.phenotypes = []
-        self.genotypes = []
+        self.populationNum = populationNum    # 世代あたりの個体数
+        self.constraints = constraints          # 設計変数
+        self.generations = []
+
         self.step()
 
     def step(self):
@@ -24,7 +24,6 @@ class GeneticAlgorithm(object):
         """
         # 01. Generate : 生成
         self.generate()
-        self.phenotypesDraw()
 
         # 02. Evaluate : 評価
 
@@ -38,15 +37,18 @@ class GeneticAlgorithm(object):
         """
         generate
         """
-        for i in range(self.population):
-            x = random.uniform(self.minX, self.maxX)
-            phenotype = Shape(x)
-            self.phenotypes.append(phenotype)
-            self.genotypes.append(x)
+        individuals = []
+        for i in range(self.populationNum):
+            gene = []
+            for var in self.constraints:
+                varName = var[0]
+                varType = var[1]
+                varMin = var[2]
+                varMax = var[3]
+                if(varType=="float"):
+                    v = random.uniform(varMin, varMax)
+                    gene.append(v)
+            individual = Individual(gene)
+            individuals.append(individual)
+        self.generations.append(individuals)
     
-    def phenotypesDraw(self):
-        """
-        generationDraw
-        """
-        for phenotype in self.phenotypes:
-            phenotype.draw()
