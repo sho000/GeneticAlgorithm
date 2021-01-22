@@ -13,7 +13,7 @@ class FitnessLandscape(object):
     
     def setScale(self):
         w = rs.VectorSubtract(self.guid_boundingBox[1]-self.guid_boundingBox[0])
-        d - rs.VectorSubtract(self.guid_boundingBox[3]-self.guid_boundingBox[2])
+        d = rs.VectorSubtract(self.guid_boundingBox[3]-self.guid_boundingBox[2])
     
     
     def drawBoundingBox(self):
