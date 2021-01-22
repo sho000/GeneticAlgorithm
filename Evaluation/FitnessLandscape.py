@@ -1,14 +1,17 @@
 # coding:utf-8
 import rhinoscriptsyntax as rs
-class Evaluation(object):
+class FitnessLandscape(object):
     """
-    Evaluation
+    FitnessLandscape
     """
     def __init__(self):
         """
         constructor
         """
-        self.fitnessLandscape = rs.GetObject("select fitness landscape")
+        self.guid = rs.GetObject("select fitness landscape")
+    
+    def setScale(self):
+        rs.BoundingBox(self.gu)
 
     def getFitness(self,gene):
         fitness = 0

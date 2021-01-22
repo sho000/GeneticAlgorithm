@@ -1,6 +1,8 @@
 # coding:utf-8
+import rhinoscriptsyntax as rs
 import random
-from Optimization.Individual import Individual
+from Generation.Shape import Shape
+from Evaluation.FitnessLandscape import FitnessLandscape
 
 class GeneticAlgorithm(object):
     """
@@ -8,28 +10,28 @@ class GeneticAlgorithm(object):
     """
     def __init__(   self, 
                     populationNum,
-                    constraints,
-                    evaluation):
+                    constraints):
         """
         コンストラクタ
         """
         self.populationNum = populationNum    # 世代あたりの個体数
         self.constraints = constraints          # 設計変数
-        self.evaluation = evaluation
         self.generations = []
+        self.evaluation = FitnessLandscape()
 
         self.step()
-
+    
     def step(self):
         """
         手順
         """
         # 01. Generate : 生成
         self.generate()
+        self.drawGenerations()
 
         # 02. Evaluate : 評価
         self.evaluate()
-
+        self.drawEvaluation()
         # 03. Select : 選択
 
         # 04. Breed : 交配
@@ -40,23 +42,38 @@ class GeneticAlgorithm(object):
         """
         generate
         """
-        individuals = []
+        shapes = []
         for i in range(self.populationNum):
             gene = []
-            for var in self.constraints:
-                varName = var[0]
-                varType = var[1]
-                varMin = var[2]
-                varMax = var[3]
+            for constraint in self.constraints:
+                varName = constraint[0]
+                varType = constraint[1]
+                varMin = constraint[2]
+                varMax = constraint[3]
                 if(varType=="float"):
                     v = random.uniform(varMin, varMax)
-                    gene.append(v)
-            individual = Individual(gene)
-            individuals.append(individual)
-        self.generations.append(individuals)
+                elif(varType=="int"):
+                    v = random.randint(varMin, varMax)
+                else:
+                    v = 0
+                gene.append(v)
+            shape = Shape(gene)
+            shapes.append(shape)
+        self.generations.append(shapes)
+    
+    def drawGenerations(self):
+        for i, generation in enumerate(self.generations):
+            layer = rs.AddLayer("generation{}".format(i))
+            for shape in generation:
+                guids = shape.draw()
+                rs.ObjectLayer(guids,layer)
     
     def evaluate(self):
         """
         evaluate
         """
-        self.evaluation.getFitness()
+        pass
+
+    
+        
+    
