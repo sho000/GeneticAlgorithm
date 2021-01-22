@@ -17,7 +17,7 @@ class GeneticAlgorithm(object):
         self.populationNum = populationNum    # 世代あたりの個体数
         self.constraints = constraints          # 設計変数
         self.generations = []
-        self.evaluation = FitnessLandscape()
+        self.fitnessLandscape = FitnessLandscape()
 
         self.step()
     
@@ -31,7 +31,8 @@ class GeneticAlgorithm(object):
 
         # 02. Evaluate : 評価
         self.evaluate()
-        self.drawEvaluation()
+        # self.drawEvaluation()
+        
         # 03. Select : 選択
 
         # 04. Breed : 交配
@@ -72,7 +73,7 @@ class GeneticAlgorithm(object):
         """
         evaluate
         """
-        pass
+        guids = self.fitnessLandscape.drawBoundingBox()
 
     
         
