@@ -8,7 +8,7 @@ class FitnessLandscape(object):
         """
         constructor
         """
-        self.guid_fitnesslandscape = rs.GetObject("select fitness landscape")
+        self.guid_fitnesslandscape = rs.GetObject("select fitness landscape curve", filter=rs.filter.curve)
         self.guid_boundingBox = rs.BoundingBox(self.guid_fitnesslandscape)
         movePt = rs.VectorSubtract([0,0,0],self.guid_boundingBox[0])
         guid = rs.CopyObject(self.guid_fitnesslandscape)

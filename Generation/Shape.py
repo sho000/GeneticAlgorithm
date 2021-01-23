@@ -7,3 +7,5 @@ class Shape(object):
     def __init__(self, gene):
         self.gene = gene
         self.fitness = -1
+        self.selectionProbability = -1
+        self.sumTotalselectionProbability = -1
