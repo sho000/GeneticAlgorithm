@@ -14,8 +14,8 @@
     ],
 
     // enable new language server. THIS IS EXTREMELY IMPORTANT TO HAVE FAST AUTOCOMPLETE!!
-    "python.languageServer": "Microsoft",
     "python.jediEnabled": false,
+    "python.languageServer": "Microsoft",
 
     // Enable/Disable rhinopython
     "RhinoPython.Enabled": true,
