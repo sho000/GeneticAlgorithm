@@ -134,42 +134,41 @@ class GeneticAlgorithm(object):
         layer_axis = rs.AddLayer("axis", color=rs.CreateColor([150,150,150]), parent=layer_fitness)
         layer_text = rs.AddLayer("text", color=rs.CreateColor([100,100,100]), parent=layer_fitness)
         layer_contour = rs.AddLayer("contour", color=rs.CreateColor([200,200,200]), parent=layer_fitness)
-        # contour
-        guid = rs.AddSrfContourCrvs(
-            self.fitnessLandscape.guid_fitnesslandscape,
-            [self.fitnessLandscape.guid_boundingBox[0], self.fitnessLandscape.guid_boundingBox[4]],
-            10)
-        rs.ObjectLayer(guid, layer_contour)
         # axis
-        guid = rs.AddLine(self.fitnessLandscape.guid_boundingBox[0],self.fitnessLandscape.guid_boundingBox[1])
-        rs.ObjectLayer(guid, layer_axis)
-        guid = rs.AddLine(self.fitnessLandscape.guid_boundingBox[0],self.fitnessLandscape.guid_boundingBox[3])
-        rs.ObjectLayer(guid, layer_axis)
-        guid = rs.AddLine(self.fitnessLandscape.guid_boundingBox[0],self.fitnessLandscape.guid_boundingBox[4])
-        rs.ObjectLayer(guid, layer_axis)
+        for i in range(4):
+            guid = rs.AddLine(self.fitnessLandscape.guid_boundingBox[i],self.fitnessLandscape.guid_boundingBox[i+4])
+            rs.ObjectLayer(guid, layer_axis)
+        for i in range(4):
+            guid = rs.AddLine(self.fitnessLandscape.guid_boundingBox[i],self.fitnessLandscape.guid_boundingBox[(i+1)%4])
+            rs.ObjectLayer(guid, layer_axis)
+        for i in range(4):
+            guid = rs.AddLine(self.fitnessLandscape.guid_boundingBox[i+4],self.fitnessLandscape.guid_boundingBox[(i+1)%4+4])
+            rs.ObjectLayer(guid, layer_axis)
         # measure
-        division = 10
+        divisionX = 10
+        divisionY = 10
+        divisionZ = 20
         xDis = self.fitnessLandscape.xMax - self.fitnessLandscape.xMin
         yDis = self.fitnessLandscape.yMax - self.fitnessLandscape.yMin
         zDis = self.fitnessLandscape.zMax - self.fitnessLandscape.zMin
-        xPitch = xDis/division
-        yPitch = yDis/division
-        zPitch = zDis/division
-        for i in range(division+1):
+        xPitch = xDis/divisionX
+        yPitch = yDis/divisionY
+        zPitch = zDis/divisionZ
+        for i in range(divisionX+1):
             sPt = [xPitch*i,  0, 0]
             sPt = rs.VectorAdd(sPt, self.fitnessLandscape.guid_boundingBox[0])
             ePt = [xPitch*i, -30, 0]
             ePt = rs.VectorAdd(ePt, self.fitnessLandscape.guid_boundingBox[0])
             guid = rs.AddLine(sPt,ePt)
             rs.ObjectLayer(guid, layer_axis)
-        for i in range(division+1):
+        for i in range(divisionY+1):
             sPt = [0, yPitch*i, 0]
             sPt = rs.VectorAdd(sPt, self.fitnessLandscape.guid_boundingBox[0])
             ePt = [-30, yPitch*i, 0]
             ePt = rs.VectorAdd(ePt, self.fitnessLandscape.guid_boundingBox[0])
             guid = rs.AddLine(sPt,ePt)
             rs.ObjectLayer(guid, layer_axis)
-        for i in range(division+1):
+        for i in range(divisionZ+1):
             sPt = [0, 0, zPitch*i]
             sPt = rs.VectorAdd(sPt, self.fitnessLandscape.guid_boundingBox[0])
             ePt = [-30, 0, zPitch*i]
@@ -177,7 +176,7 @@ class GeneticAlgorithm(object):
             guid = rs.AddLine(sPt,ePt)
             rs.ObjectLayer(guid, layer_axis)
         # text
-        for i in range(division+1):
+        for i in range(divisionX+1):
             pt = [xPitch*i, -40, 0]
             pt = rs.VectorAdd(pt, self.fitnessLandscape.guid_boundingBox[0])
             text = "{:.1f}".format(pt[0])
@@ -187,7 +186,7 @@ class GeneticAlgorithm(object):
             justification=2+262144  
             guid = rs.AddText(text, pt, height=height, font=font, font_style=font_style, justification=justification)
             rs.ObjectLayer(guid, layer_text)
-        for i in range(division+1):
+        for i in range(divisionY+1):
             pt = [-40, yPitch*i, 0]
             pt = rs.VectorAdd(pt, self.fitnessLandscape.guid_boundingBox[0])
             text = "{:.1f}".format(pt[1])
@@ -197,7 +196,7 @@ class GeneticAlgorithm(object):
             justification=4+131072   
             guid = rs.AddText(text, pt, height=height, font=font, font_style=font_style, justification=justification)
             rs.ObjectLayer(guid, layer_text)
-        for i in range(division+1):
+        for i in range(divisionZ+1):
             pt = [-40, 0, zPitch*i]
             pt = rs.VectorAdd(pt, self.fitnessLandscape.guid_boundingBox[0])
             text = "{:.1f}".format(pt[2])
@@ -207,6 +206,12 @@ class GeneticAlgorithm(object):
             justification=4+131072 
             guid = rs.AddText(text, pt, height=height, font=font, font_style=font_style, justification=justification)
             rs.ObjectLayer(guid, layer_text)
+        # contour
+        guid = rs.AddSrfContourCrvs(
+            self.fitnessLandscape.guid_fitnesslandscape,
+            [self.fitnessLandscape.guid_boundingBox[0], self.fitnessLandscape.guid_boundingBox[4]],
+            zPitch)
+        rs.ObjectLayer(guid, layer_contour)
         rs.EnableRedraw(True)
     
     def drawGenerations(self):
