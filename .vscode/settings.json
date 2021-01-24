@@ -14,8 +14,7 @@
     ],
 
     // enable new language server. THIS IS EXTREMELY IMPORTANT TO HAVE FAST AUTOCOMPLETE!!
-    "python.jediEnabled": false,
-    "python.languageServer": "Microsoft",
+    "python.jediEnabled": true,
 
     // Enable/Disable rhinopython
     "RhinoPython.Enabled": true,
@@ -28,5 +27,6 @@
         "C:\\Program Files\\Rhino 6\\Plug-ins\\IronPython\\Lib",
         "C:\\Users\\sho\\AppData\\Roaming\\McNeel\\Rhinoceros\\6.0\\scripts"
     ],
-    "python.pythonPath": "C:\\Users\\sho\\anaconda3\\envs\\rhinoremote\\python.exe"
+    "python.pythonPath": "C:\\Users\\sho\\anaconda3\\envs\\rhinoremote\\python.exe",
+    "python.languageServer": "Jedi"
 }

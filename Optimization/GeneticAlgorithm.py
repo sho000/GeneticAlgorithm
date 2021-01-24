@@ -2,7 +2,7 @@
 import rhinoscriptsyntax as rs
 import scriptcontext as sc
 import random
-random.seed(1)
+random.seed(3)
 import bisect
 from Generation.Shape import Shape
 from Evaluation.FitnessLandscape import FitnessLandscape
@@ -33,11 +33,11 @@ class GeneticAlgorithm(object):
         self.generations = []       # 世代ごとに全世代のShapesインスタンスを格納
         self.nextGenaration = []    # 次世代のShapesインスタンスを格納
         self.gCnt = 0               # 今の世代カウント
-        self.N = 50                 # 世代あたりの個体数
-        self.G = 50                  # 最大世代数
+        self.N = 100                 # 世代あたりの個体数
+        self.G = 40                  # 最大世代数
         
         # 確率
-        self.remainProbability = 0.1       # 個体をそのままコピーする確率
+        self.remainProbability = 0.1      # 個体をそのままコピーする確率
         self.mutationProbability = 0.1     # 突然変異する確率
         self.crossOverProbability = 1 - self.remainProbability - self.mutationProbability   # 個体を交叉する確率
         
@@ -288,21 +288,64 @@ class GeneticAlgorithm(object):
             font_style=0
             justification=4+131072 
             guid = rs.AddText(text, pt, height=height, font=font, font_style=font_style, justification=justification)
-            rs.ObjectLayer
-            (guid, layer_text)
+            rs.ObjectLayer(guid, layer_text)
+        # xAxis title
+        pt = rs.VectorAdd(self.fitnessLandscape.guid_boundingBox[0],self.fitnessLandscape.guid_boundingBox[1])
+        pt = rs.VectorDivide(pt,2) 
+        pt = [pt[0],pt[1]-100,pt[2]]
+        text = "GENE0"
+        height=18
+        font="Arial"
+        font_style=0
+        justification=2+262144  
+        guid = rs.AddText(text, pt, height=height, font=font, font_style=font_style, justification=justification)
+        rs.ObjectLayer(guid, layer_text)
+        # yAxis title
+        pt = rs.VectorAdd(self.fitnessLandscape.guid_boundingBox[1],self.fitnessLandscape.guid_boundingBox[2])
+        pt = rs.VectorDivide(pt,2) 
+        pt = [pt[0]+100,pt[1],pt[2]]
+        text = "GENE1"
+        height=18
+        font="Arial"
+        font_style=0
+        justification=1+131072   
+        guid = rs.AddText(text, pt, height=height, font=font, font_style=font_style, justification=justification)
+        rs.ObjectLayer(guid, layer_text)
+        # zAxis title
+        pt = rs.VectorAdd(self.fitnessLandscape.guid_boundingBox[0],self.fitnessLandscape.guid_boundingBox[4])
+        pt = rs.VectorDivide(pt,2) 
+        pt = [pt[0]-100,pt[1],pt[2]]
+        text = "FITNESS"
+        height=18
+        font="Arial"
+        font_style=0
+        justification=4+131072   
+        guid = rs.AddText(text, pt, height=height, font=font, font_style=font_style, justification=justification)
+        rs.ObjectLayer(guid, layer_text)
         # contour
-        guid = rs.AddSrfContourCrvs(
-            self.fitnessLandscape.guid_fitnesslandscape,
-            [self.fitnessLandscape.guid_boundingBox[0], self.fitnessLandscape.guid_boundingBox[4]],
-            zPitch)
+        guid = rs.AddSrfContourCrvs(self.fitnessLandscape.guid_fitnesslandscape, [self.fitnessLandscape.guid_boundingBox[0], self.fitnessLandscape.guid_boundingBox[4]], zPitch)
         rs.ObjectLayer(guid, layer_contour)
     
     def drawGenerations(self):
+        # generations title
+        layer_title = rs.AddLayer("title",color=rs.CreateColor([0,0,0]),parent="fitness")
+        pt = rs.VectorAdd(self.fitnessLandscape.guid_boundingBox[0],self.fitnessLandscape.guid_boundingBox[1])
+        pt = rs.VectorDivide(pt,2) 
+        pt = [pt[0],pt[1]-200,pt[2]]
+        text = "GENERATION"
+        height=18
+        font="Arial"
+        font_style=0
+        justification=2+262144  
+        textTitle = rs.AddText(text, pt, height=height, font=font, font_style=font_style, justification=justification)
+        rs.ObjectLayer(textTitle, layer_title)
+        # draw generations
         for i, generation in enumerate(self.generations):
-            r = random.randint(0,255)
-            b = random.randint(0,255)
-            g = random.randint(0,255)
-            color = rs.CreateColor([r,g,b])
+            # r = random.randint(0,255)
+            # b = random.randint(0,255)
+            # g = random.randint(0,255)
+            # color = rs.CreateColor([r,g,b])
+            color = rs.CreateColor([180,0,0])
             layer_generation = rs.AddLayer("generation{}".format(i),color=color)
             layer_shape = rs.AddLayer("shape{}".format(i),color=color,parent=layer_generation)
             layer_chilren = rs.AddLayer("children{}".format(i),color=color,visible=False,parent=layer_generation)
@@ -322,11 +365,15 @@ class GeneticAlgorithm(object):
                     dimstyle = rs.CurrentDimStyle()
                     rs.DimStyleLeaderArrowSize( dimstyle, 0.1)
                     rs.CurveArrows(guid,2)
-            
+                # title
+                text = "GENERATION {}".format(i)
+                rs.TextObjectText(textTitle,text)
+                
+            # captureView
             self.captureView(i)
             rs.LayerVisible(layer_generation,visible=False)
     
     def captureView(self,i):
         #https://wiki.mcneel.com/developer/rhinocommonsamples/screencaptureview
-        bitmap = doc.Views.ActiveView.CaptureToBitmap(True, True, True)
+        bitmap = doc.Views.ActiveView.CaptureToBitmap(False,False,False)
         bitmap.Save("image/image{}.png".format(i))

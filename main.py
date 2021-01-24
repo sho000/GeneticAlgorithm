@@ -4,4 +4,3 @@ from Optimization.GeneticAlgorithm import GeneticAlgorithm
 
 # GA
 ga = GeneticAlgorithm()
-
