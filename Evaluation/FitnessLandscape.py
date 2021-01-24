@@ -21,7 +21,7 @@ class FitnessLandscape(object):
         fitness = -1
         h = self.zMax - self.zMin
         sPt = [gene[0], gene[1], 0]
-        ePt = [gene[0], gene[1], h]
+        ePt = [gene[0], gene[1], h*2]
         ray = rs.AddLine(sPt, ePt)
         intersection = rs.CurveSurfaceIntersection(ray, self.guid_fitnesslandscape)
         rs.DeleteObject(ray)
