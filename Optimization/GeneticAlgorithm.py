@@ -46,32 +46,53 @@ class GeneticAlgorithm(object):
         # 1 : あらかじめ 全世代の個体が入る集合self.generationsとN個の次世代の個体が入る集合self.nextGenarationを用意する。
         # 2 : 現世代に N 個の個体をランダムに生成する。
         self.makeFirstGenerates()
+        print("2 : makeFirstGenerates")
         
         # 7 : 最大世代数G回まで繰り返し
         while(self.gCnt<=self.G):
+            print("7 : gCnt={}".format(self.gCnt))
             # escキーでbreak
             if (sc.escape_test(False)):
-                print "TimeConsumingTask cancelled."
+                print("cancelled.")
                 break
 
             # 3 : 評価関数により、現世代の各個体の適応度をそれぞれ計算する。
             self.evaluate()
-            
-            # 5 : 次世代の個体数がN個になるまで上記の動作を繰り返す。
-            
-            # 4 : ある確率で次の3つの動作のどれかを行い、その結果を次世代に保存する。
-            #   4-1 : 個体を二つ選択（選択方法は後述）して交叉（後述）を行う。
-            #   4-2 : 個体を一つ選択して突然変異（後述）を行う。
-            #   4-3 : 個体を一つ選択してそのままコピーする。
-            self.makeNextGenarations()
+            print("3 : makeFirstGenerates")
 
-            
+            # 5 : 次世代の個体数がN個になるまで上記の動作を繰り返す。
+            while(len(self.nextGenaration)<=self.N):
+                print("5 : nextGLen{}".format(len(self.nextGenaration)))
+                # escキーでbreak
+                if (sc.escape_test(False)):
+                    print("cancelled.")
+                    break
+                # 4 : ある確率で次の3つの動作のどれかを行い、その結果を次世代に保存する。
+                rnd = random.random()
+                if(rnd <= self.crossOverProbability):
+                    # 4-1 : 個体を二つ選択（選択方法は後述）して交叉（後述）を行う。
+                    self.crossOver()
+                    print("4-1 : crossOver")
+                elif(rnd > self.crossOverProbability and
+                     rnd <= self.mutationProbability + self.crossOverProbability):
+                    # 4-2 : 個体を一つ選択して突然変異（後述）を行う。
+                    self.mutate()
+                    print("4-2 : mutate")
+                else:
+                    # 4-3 : 個体を一つ選択してそのままコピーする。
+                    self.remain()
+                    print("4-3 : remain")
+
             # 6 : 次世代の個体数がN個になったら次世代の内容を全て現世代に移す。
+            self.generations.append(self.nextGenaration)
+            self.nextGenaration = []
             self.gCnt += 1
+            print("6 : init for next")
 
         # 描画
         self.drawEvaluation()
         self.drawGenerations()
+        
 
     def makeFirstGenerates(self):
         shapes = []
@@ -91,7 +112,16 @@ class GeneticAlgorithm(object):
             shape.fitness = fitness
         rs.EnableRedraw(True)
     
-    def selectByRoulette(self):
+    def crossOver(self):
+        pass
+
+    def mutate(self):
+        pass
+
+    def remain(self):
+        pass
+    
+    def _selectByRoulette(self):
         selectedShapes = []
         # 『発見的最適化手法による構造のフォルムとシステム』p26参照
         # 01 個体群のすべての個体の適応度を合計して全体適応度とする
