@@ -25,10 +25,11 @@ class GeneticAlgorithm(object):
         ]
         
         # instance of Shapes
-        self.generations = []       # 世代ごとにShapesインスタンスを格納
+        self.generations = []       # 世代ごとに全世代のShapesインスタンスを格納
+        self.nextGenaration = []    # 次世代のShapesインスタンスを格納
+        self.gCnt = 0               # 今の世代カウント
         self.N = 50                 # 世代あたりの個体数
         self.G = 0                  # 最大世代数
-        self.gCnt = 0               # 今の世代カウント
         
         # 確率
         self.remainProbability = 0.1       # 個体をそのままコピーする確率
@@ -36,17 +37,17 @@ class GeneticAlgorithm(object):
         self.crossOverProbability = 1 - self.remainProbability - self.mutationProbability   # 個体を交叉する確率
         
         # 手順
-        self.run()                             
+        self.algorithm()                             
     
-    def run(self):
+    def algorithm(self):
+        # https://ja.wikipedia.org/wiki/%E9%81%BA%E4%BC%9D%E7%9A%84%E3%82%A2%E3%83%AB%E3%82%B4%E3%83%AA%E3%82%BA%E3%83%A0#%E3%82%A2%E3%83%AB%E3%82%B4%E3%83%AA%E3%82%BA%E3%83%A0%E3%81%AE%E6%B5%81%E3%82%8C
         # 遺伝的アルゴリズムは一般に以下の流れで実装される。
-        # なお、下記では個体数を N, 最大世代数を G と置く。
-        # 1 : あらかじめ 各世代のN 個の個体が入る集合self.generationsを用意する。
-        #     以下、この二つの集合を「現世代」、「次世代」と呼ぶことにする。
+        # なお、下記では個体数をN, 最大世代数をGと置く。
+        # 1 : あらかじめ 全世代の個体が入る集合self.generationsとN個の次世代の個体が入る集合self.nextGenarationを用意する。
         # 2 : 現世代に N 個の個体をランダムに生成する。
         self.makeFirstGenerates()
         
-        # 7 : 最大世代数 G 回まで繰り返し
+        # 7 : 最大世代数G回まで繰り返し
         while(self.gCnt<=self.G):
             # escキーでbreak
             if (sc.escape_test(False)):
@@ -56,13 +57,16 @@ class GeneticAlgorithm(object):
             # 3 : 評価関数により、現世代の各個体の適応度をそれぞれ計算する。
             self.evaluate()
             
+            # 5 : 次世代の個体数がN個になるまで上記の動作を繰り返す。
+            
             # 4 : ある確率で次の3つの動作のどれかを行い、その結果を次世代に保存する。
             #   4-1 : 個体を二つ選択（選択方法は後述）して交叉（後述）を行う。
             #   4-2 : 個体を一つ選択して突然変異（後述）を行う。
             #   4-3 : 個体を一つ選択してそのままコピーする。
-            # self.makeNextGenarations()
-            # 5 : 次世代の個体数が N 個になるまで上記の動作を繰り返す。
-            # 6 : 次世代の個体数が N 個になったら次世代の内容を全て現世代に移す。
+            self.makeNextGenarations()
+
+            
+            # 6 : 次世代の個体数がN個になったら次世代の内容を全て現世代に移す。
             self.gCnt += 1
 
         # 描画
@@ -131,19 +135,20 @@ class GeneticAlgorithm(object):
         rs.EnableRedraw(False)
         # layer
         layer_fitness = rs.AddLayer("fitness")
-        layer_axis = rs.AddLayer("axis", color=rs.CreateColor([150,150,150]), parent=layer_fitness)
-        layer_text = rs.AddLayer("text", color=rs.CreateColor([100,100,100]), parent=layer_fitness)
-        layer_contour = rs.AddLayer("contour", color=rs.CreateColor([200,200,200]), parent=layer_fitness)
+        layer_box = rs.AddLayer("box", color=rs.CreateColor([0,0,0]), parent=layer_fitness)
+        layer_axis = rs.AddLayer("axis", color=rs.CreateColor([0,0,0]), parent=layer_fitness)
+        layer_text = rs.AddLayer("text", color=rs.CreateColor([0,0,0]), parent=layer_fitness)
+        layer_contour = rs.AddLayer("contour", color=rs.CreateColor([150,150,150]), parent=layer_fitness)
         # axis
         for i in range(4):
             guid = rs.AddLine(self.fitnessLandscape.guid_boundingBox[i],self.fitnessLandscape.guid_boundingBox[i+4])
-            rs.ObjectLayer(guid, layer_axis)
+            rs.ObjectLayer(guid, layer_box)
         for i in range(4):
             guid = rs.AddLine(self.fitnessLandscape.guid_boundingBox[i],self.fitnessLandscape.guid_boundingBox[(i+1)%4])
-            rs.ObjectLayer(guid, layer_axis)
+            rs.ObjectLayer(guid, layer_box)
         for i in range(4):
             guid = rs.AddLine(self.fitnessLandscape.guid_boundingBox[i+4],self.fitnessLandscape.guid_boundingBox[(i+1)%4+4])
-            rs.ObjectLayer(guid, layer_axis)
+            rs.ObjectLayer(guid, layer_box)
         # measure
         divisionX = 10
         divisionY = 10
@@ -163,9 +168,9 @@ class GeneticAlgorithm(object):
             rs.ObjectLayer(guid, layer_axis)
         for i in range(divisionY+1):
             sPt = [0, yPitch*i, 0]
-            sPt = rs.VectorAdd(sPt, self.fitnessLandscape.guid_boundingBox[0])
-            ePt = [-30, yPitch*i, 0]
-            ePt = rs.VectorAdd(ePt, self.fitnessLandscape.guid_boundingBox[0])
+            sPt = rs.VectorAdd(sPt, self.fitnessLandscape.guid_boundingBox[1])
+            ePt = [30, yPitch*i, 0]
+            ePt = rs.VectorAdd(ePt, self.fitnessLandscape.guid_boundingBox[1])
             guid = rs.AddLine(sPt,ePt)
             rs.ObjectLayer(guid, layer_axis)
         for i in range(divisionZ+1):
@@ -187,13 +192,13 @@ class GeneticAlgorithm(object):
             guid = rs.AddText(text, pt, height=height, font=font, font_style=font_style, justification=justification)
             rs.ObjectLayer(guid, layer_text)
         for i in range(divisionY+1):
-            pt = [-40, yPitch*i, 0]
-            pt = rs.VectorAdd(pt, self.fitnessLandscape.guid_boundingBox[0])
+            pt = [40, yPitch*i, 0]
+            pt = rs.VectorAdd(pt, self.fitnessLandscape.guid_boundingBox[1])
             text = "{:.1f}".format(pt[1])
             height=12
             font="Arial"
             font_style=0
-            justification=4+131072   
+            justification=1+131072   
             guid = rs.AddText(text, pt, height=height, font=font, font_style=font_style, justification=justification)
             rs.ObjectLayer(guid, layer_text)
         for i in range(divisionZ+1):
